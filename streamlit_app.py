@@ -24,6 +24,7 @@ def main():
     # Configurazione pagina e tema
     st.set_page_config(
         page_title="Decision Tree per Prestiti", 
+        page_icon=":deciduous_tree:",
         layout="wide",
         initial_sidebar_state="expanded",
         menu_items={
