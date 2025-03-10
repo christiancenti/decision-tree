@@ -22,6 +22,7 @@ Le metriche implementate per valutare la bontà dei risultati includono:
 - `streamlit_app.py`: Applicazione Streamlit interattiva per visualizzare e interagire con l'albero decisionale.
 - `decision_tree.py`: Contiene le funzioni di utilità per generare il dataset e analizzare l'albero decisionale.
 - `.gitignore`: Configurazione per escludere file non necessari dal repository.
+- `.streamlit`: Contiene la configurazione per Streamlit.
 
 ## Struttura del Progetto
 
@@ -44,7 +45,7 @@ source venv/bin/activate  # Per Linux/Mac
 venv\Scripts\activate  # Per Windows
 
 # Installa le dipendenze
-pip install streamlit pandas numpy scikit-learn matplotlib seaborn plotly
+pip install -r requirements.txt
 ```
 
 ## Esecuzione
