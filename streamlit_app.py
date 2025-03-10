@@ -78,7 +78,7 @@ def main():
         with st.container(border=True):
             st.subheader("🎚️ Configurazione Albero")
             # Parametri albero
-            max_depth = st.slider("Profondità massima dell'albero", 1, 10, 3, 
+            max_depth = st.slider("Profondità massima dell'albero", 1, 4, 3, 
                           help="Controlla quanto può crescere l'albero in profondità. Valori più alti consentono modelli più complessi.")
             
         # Aggiungiamo il QR code alla fine della sidebar
