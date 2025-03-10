@@ -1,5 +1,5 @@
 import streamlit as st
-from decision_tree import generate_sample_data, analyze_tree_nodes, trace_decision_path
+from decision_tree import generate_sample_data, trace_decision_path
 import numpy as np
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
@@ -78,8 +78,14 @@ def main():
         with st.container(border=True):
             st.subheader("🎚️ Configurazione Albero")
             # Parametri albero
-            max_depth = st.slider("Profondità massima dell'albero", 1, 10, 5, 
+            max_depth = st.slider("Profondità massima dell'albero", 1, 10, 3, 
                           help="Controlla quanto può crescere l'albero in profondità. Valori più alti consentono modelli più complessi.")
+            
+        # Aggiungiamo il QR code alla fine della sidebar
+        st.divider()
+        st.subheader("📱 Accedi all'app")
+        st.image("qr_code.svg", use_container_width=True)
+        
     
     # Inizializza il dataset alla prima esecuzione
     if 'data' not in st.session_state:
@@ -151,9 +157,6 @@ def main():
     # Creazione e addestramento dell'albero decisionale
     clf = DecisionTreeClassifier(random_state=42, max_depth=max_depth)
     clf.fit(X_train, y_train)
-    
-    # Numero totale di nodi nell'albero
-    n_nodes_total = clf.tree_.node_count
     
     # Predizione sul test set
     y_pred = clf.predict(X_test)
@@ -335,6 +338,29 @@ def main():
         with st.container(border=True):
             st.subheader("🔍 Visualizzazione dell'Albero")
             
+            # Creazione della legenda personalizzata
+            st.write("**Legenda:**")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.markdown("""
+                - 🟦 **Blu**: Tendenza verso "Approvato"
+                - 🟧 **Arancione**: Tendenza verso "Non Approvato"
+                - 🔍 **Intensità del colore**: Più intenso = maggiore certezza
+                """)
+            with col2:
+                st.markdown("""
+                - ⬅️ **Sinistra**: Se la condizione è VERA
+                - ➡️ **Destra**: Se la condizione è FALSA
+                - ⬇️ **Dall'alto verso il basso**
+                """)
+            with col3:
+                st.markdown("""
+                - 🎯 **Condizione**: es. "reddito ≤ 30.5"
+                - ✅ Se VERO: vai a SINISTRA
+                - ❌ Se FALSO: vai a DESTRA
+                """)
+            
+            # Plot dell'albero con parametri semplificati
             fig, ax = plt.subplots(figsize=(20, 10))
             plot_tree(clf, 
                     feature_names=X.columns,
@@ -342,21 +368,26 @@ def main():
                     filled=True,
                     rounded=True,
                     fontsize=10,
+                    proportion=True,  # Visualizza solo proporzioni invece di conteggi
+                    precision=1,      # Riduce il numero di decimali
+                    impurity=False,
                     ax=ax)
+            
+            # Aggiunta di un titolo esplicativo
+            plt.title("Albero Decisionale per l'Approvazione dei Prestiti", fontsize=16)
+            
             st.pyplot(fig)
             
-            with st.expander("📚 Come leggere questo diagramma?", expanded=True):
-                st.write("""
-                    - Ogni **nodo** rappresenta una decisione basata su una caratteristica
-                    - Il testo in ogni nodo mostra:
-                      - La condizione di decisione (es. "reddito_annuale ≤ 30.5")
-                      - La distribuzione di classe nel nodo (gini o entropy)
-                      - Il numero totale di campioni nel nodo
-                      - La distribuzione dei campioni per classe
-                    - I **nodi colorati in blu** tendono verso la classe "approvato"
-                    - I **nodi colorati in arancione** tendono verso la classe "non_approvato"
-                    - Le **sfumature di colore** indicano la purezza del nodo (più intenso = più puro)
-                    """)
+            # Aggiungo un esempio pratico
+            with st.expander("💡 Esempio di Lettura", expanded=True):
+                st.markdown("""
+                **Come seguire una decisione:**
+                1. Parti dal nodo in alto (radice)
+                2. Leggi la condizione (es. "reddito_annuale ≤ 30.5")
+                3. Se la condizione è VERA ✅ → vai a SINISTRA ⬅️
+                4. Se la condizione è FALSA ❌ → vai a DESTRA ➡️
+                5. Ripeti finché non raggiungi un nodo finale
+                """)
         
         # Importanza delle caratteristiche
         with st.container(border=True):
@@ -386,56 +417,6 @@ def main():
                     
                     L'importanza è calcolata in base a quanto ciascuna caratteristica riduce l'impurità quando viene utilizzata per dividere i dati.
                     """)
-        
-        # Analisi dei nodi dell'albero
-        with st.container(border=True):
-            st.subheader("🔍 Primi 10 Passaggi dell'Albero")
-            
-            st.write("""
-            #### 📚 Cos'è un nodo dell'albero?
-
-            Ogni nodo dell'albero rappresenta una decisione o una classificazione finale.
-
-            - **Nodi di decisione**: dividono i dati in base a una condizione su una caratteristica.
-            - **Nodi foglia**: rappresentano la classificazione finale quando non ci sono più divisioni.
-
-            📌 Espandi ciascun nodo per visualizzare i dettagli sulla distribuzione dei dati e sulle condizioni di decisione.
-            """)
-
-            nodes_info = analyze_tree_nodes(clf, X, num_nodes=10)
-            
-            for node in nodes_info:
-                # Determiniamo se è un nodo foglia
-                is_leaf = 'figlio_sx' not in node
-                
-                # Titolo del nodo (colorato per foglie)
-                if is_leaf:
-                    node_title = f"🍃 Nodo {node['nodo']}: {node['condizione']}"
-                else:
-                    node_title = f"🔀 Nodo {node['nodo']}: {node['condizione']}"
-                    
-                with st.expander(node_title):
-                    # Informazioni sui campioni
-                    st.write(f"**Campioni totali nel nodo:** {node['campioni']}")
-                    
-                    # Visualizzazione distribuzione con colori
-                    st.write("**Distribuzione delle classi:**")
-                    dist_text = node['distribuzione']
-                    dist_parts = dist_text.split(', ')
-                    
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        approved_text = dist_parts[0]
-                        st.success(approved_text)
-                    with col2:
-                        not_approved_text = dist_parts[1]
-                        st.error(not_approved_text)
-                    
-                    # Informazioni sui figli
-                    if not is_leaf:
-                        st.write("**Ramificazione:**")
-                        st.write(f"- Se la condizione è vera → Nodo {node['figlio_sx']} (sinistra)")
-                        st.write(f"- Se la condizione è falsa → Nodo {node['figlio_dx']} (destra)")
     
     with tab4:
         st.header("🔍 Simulazione di Approvazione Prestito")
@@ -533,6 +514,24 @@ def main():
                 # Descrizione della probabilità
                 st.markdown(f"<div style='text-align: center;'>{emoji} {description}</div>", unsafe_allow_html=True)
         
+        # Visualizzazione dell'albero decisionale
+        with st.container(border=True):
+            st.subheader("🌲 Albero Decisionale")
+            fig, ax = plt.subplots(figsize=(20, 10))
+            plot_tree(clf, 
+                    feature_names=X.columns,
+                    class_names=['approvato', 'non_approvato'],
+                    filled=True,
+                    rounded=True,
+                    fontsize=10,
+                    proportion=True,  # Visualizza solo proporzioni invece di conteggi
+                    precision=1,      # Riduce il numero di decimali
+                    impurity=False,
+                    ax=ax)
+            
+            plt.title("Albero Decisionale per l'Approvazione dei Prestiti", fontsize=16)
+            st.pyplot(fig)
+
         # Tracciamento del percorso decisionale
         with st.container(border=True):
             st.subheader("🛣️ Percorso Decisionale")

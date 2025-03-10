@@ -89,7 +89,6 @@ L'applicazione è organizzata in 5 sezioni principali:
 ### 🌲 Tab Struttura dell'Albero
 - Visualizza graficamente l'albero decisionale
 - Mostra l'importanza delle diverse caratteristiche
-- Permette di esplorare nel dettaglio i vari nodi dell'albero
 
 ### 🔍 Tab Simulazione
 - Permette di simulare nuove richieste di prestito
@@ -97,7 +96,7 @@ L'applicazione è organizzata in 5 sezioni principali:
 - Visualizza la probabilità di approvazione
 - Traccia il percorso decisionale seguito dall'albero
 
-### ❓ Tab Guida all'Applicazione
+### ❓ Tab FAQ
 - Fornisce una spiegazione dell'applicazione e delle sue funzionalità
 - Descrive la struttura e l'organizzazione dell'interfaccia utente
 - Elenca le tecnologie utilizzate e i dettagli implementativi
