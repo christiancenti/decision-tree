@@ -14,3 +14,19 @@ showErrorDetails = false
 
 [logger]
 level = "info" 
+
+[theme]
+# Tema base: "light" o "dark"
+base = "light"
+
+# Colore primario per elementi interattivi (un blu-verde)
+primaryColor = "#2E86C1"
+
+# Colore di sfondo dell'area principale (bianco leggermento ombreggiato)
+backgroundColor = "#F8F9F9"
+
+# Colore di sfondo per sidebar e widget (un grigio molto chiaro)
+secondaryBackgroundColor = "#EBF5FB"
+
+# Colore del testo (quasi nero, ma più morbido)
+textColor = "#17202A"
