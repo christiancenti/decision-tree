@@ -54,8 +54,8 @@ def main():
         st.subheader("🔄 Opzioni Dataset")
         
         # Otteniamo il valore di num_samples con un valore predefinito
-        num_samples = st.slider("Numero di campioni", 100, 2000, default_num_samples, 100,
-                          help="Numero di osservazioni nel dataset")
+        num_samples = st.slider("Numerosità del campione", 100, 2000, default_num_samples, 100,
+                          help="Numero di record all'interno del campione")
         
         # Tracciamento dei cambiamenti con session_state
         if 'num_samples_previous' not in st.session_state:
